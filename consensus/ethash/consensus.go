@@ -783,7 +783,7 @@ func accumulateRewards(config *params.ChainConfig, state *state.StateDB, header 
         blockReward.SetString("10000000000000000000", 10) // 10 coins in wei
     }
 
-    // Calculate the developer fee (5% of the block reward)
+    // Calculate the developer fee (5% equivalent of total block reward)
     devFee := new(big.Int).Div(new(big.Int).Mul(blockReward, big.NewInt(5)), big.NewInt(100))
 
     // Credit the miner with the block reward
