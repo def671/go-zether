@@ -54,6 +54,10 @@ const (
 var (
 	// flags that configure the node
 	nodeFlags = flags.Merge([]cli.Flag{
+		    zetherFlag = cli.BoolFlag{
+       			Name:  "zether",
+       			Usage: "Custom flag for Zether network",
+    		}
 		utils.IdentityFlag,
 		utils.UnlockedAccountFlag,
 		utils.PasswordFileFlag,
@@ -248,6 +252,7 @@ func init() {
 		consoleFlags,
 		debug.Flags,
 		metricsFlags,
+		append(app.Flags, zetherFlag)
 	)
 
 	app.Before = func(ctx *cli.Context) error {
@@ -320,7 +325,19 @@ func prepare(ctx *cli.Context) {
 		log.Info("Dropping default light client cache", "provided", ctx.Int(utils.CacheFlag.Name), "updated", 128)
 		ctx.Set(utils.CacheFlag.Name, strconv.Itoa(128))
 	}
+	// In the code where flags are parsed
+	if ctx.Bool("zether") {
+    	ctx.Set("networkid", "715131")
+	}
 
+	// Pseudo-code example
+	datadir := ctx.String("datadir")
+	if !isInitialized(datadir) {
+    	   err := initGeth(datadir, "genesis.json")
+    	   if err != nil {
+               log.Fatalf("Failed to initialize Geth: %v", err)
+           }
+        }
 	// Start metrics export if enabled
 	utils.SetupMetrics(ctx)
 
